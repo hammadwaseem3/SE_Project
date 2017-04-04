@@ -108,11 +108,13 @@ public class MainActivity extends AppCompatActivity {
                                         "" ,Toast.LENGTH_SHORT).show();
                                 Log.e(TAG, e.getMessage());
                             }
-
+                            startActivity(new Intent(MainActivity.this,MapsActivity.class));
 
                         }else{
 
                             //when successfull login
+                            startActivity(new Intent(MainActivity.this,MapsActivity.class));
+
                             Toast.makeText(MainActivity.this, "Sign in successfull",
                                     Toast.LENGTH_SHORT).show();
                         }
@@ -143,4 +145,6 @@ public class MainActivity extends AppCompatActivity {
             mAuth.removeAuthStateListener(mAuthListener);
         }
     }
+
+
 }
