@@ -18,6 +18,8 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class signUpPageActivity extends AppCompatActivity {
 
@@ -25,6 +27,8 @@ public class signUpPageActivity extends AppCompatActivity {
     ProgressDialog myProgressDialog;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
+    private FirebaseDatabase database;
+    private DatabaseReference myRef ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +36,7 @@ public class signUpPageActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sign_up_page);
 
         mAuth = FirebaseAuth.getInstance();
+        database = FirebaseDatabase.getInstance();
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -57,12 +62,14 @@ public class signUpPageActivity extends AppCompatActivity {
                 String email = ((EditText) findViewById(R.id.signup_id)).getText().toString().trim();
                 String password = ((EditText) findViewById(R.id.signup_password)).getText().toString().trim();
                 String confirmPassword = ((EditText) findViewById(R.id.signup_confirm_password)).getText().toString().trim();
+
                 if(password.equals(confirmPassword)){
                     if(!email.equals("") && !password.equals("")) {
                         createAccount(email, password);
                         myProgressDialog = new ProgressDialog(signUpPageActivity.this, 0);
                         myProgressDialog.setMessage("Loading");
                         myProgressDialog.show();
+
                     }
                     else{
                         Toast.makeText(signUpPageActivity.this, "Email or Password is empty",Toast.LENGTH_SHORT).show();
@@ -114,8 +121,16 @@ public class signUpPageActivity extends AppCompatActivity {
                         }
                         else{
                             //when successfull signup
+                            myRef = database.getReference("Users/"+task.getResult().getUser().getUid()+"/num");
+                            String contactNumber = ((EditText) findViewById(R.id.signup_num)).getText().toString().trim();
+                            myRef.setValue(contactNumber);
+
+                            myRef = database.getReference("Users/"+task.getResult().getUser().getUid()+"/name");
+                            String name = ((EditText) findViewById(R.id.signup_name)).getText().toString().trim();
+                            myRef.setValue(name);
 
                             finish();
+
                             Toast.makeText(signUpPageActivity.this, "Sign up successfull",
                                     Toast.LENGTH_SHORT).show();
                         }

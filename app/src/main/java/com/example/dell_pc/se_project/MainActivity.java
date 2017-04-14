@@ -1,8 +1,12 @@
 package com.example.dell_pc.se_project;
 
+import android.*;
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,14 +27,62 @@ import com.google.firebase.auth.FirebaseUser;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MyActivity";
+    private static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 1;
     ProgressDialog myProgressDialog;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
 
     @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_READ_CONTACTS: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    Log.v(TAG,"Acceeesssss");
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+
+                } else {
+
+
+                    Log.v(TAG,"Deniedddddd");
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request
+        }
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
+        if (ActivityCompat.checkSelfPermission(this,
+                android.Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        MY_PERMISSIONS_REQUEST_READ_CONTACTS);
+
+                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                // app-defined int constant. The callback method gets the
+                // result of the request.
+            }
+            else{
+
+        }
+
+
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -69,6 +121,7 @@ public class MainActivity extends AppCompatActivity {
                 String password = ((EditText) findViewById(R.id.signin_password)).getText().toString().trim();
                 myProgressDialog = new ProgressDialog(MainActivity.this,0);
                 myProgressDialog.setMessage("Loading");
+                myProgressDialog.setCanceledOnTouchOutside(false);
                 myProgressDialog.show();
 
                 if(!email.isEmpty() && !password.isEmpty()) {
@@ -108,7 +161,7 @@ public class MainActivity extends AppCompatActivity {
                                         "" ,Toast.LENGTH_SHORT).show();
                                 Log.e(TAG, e.getMessage());
                             }
-                            startActivity(new Intent(MainActivity.this,MapsActivity.class));
+
 
                         }else{
 
